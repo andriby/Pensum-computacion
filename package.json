@@ -1,0 +1,27 @@
+{
+  "name": "pensum-ucv",
+  "version": "1.0.0",
+  "description": "Pénsum Interactivo de Computación UCV",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.pensumucv.app",
+    "productName": "Pensum UCV",
+    "electronLanguages": ["es"],
+    "win": {
+      "target": "nsis"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^32.3.3",
+    "electron-builder": "^26.8.1"
+  }
+}

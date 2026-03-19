@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pénsum Computación – UCV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="kardex.js"></script>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --s1: #141627;
+      --s2: #1c1f35;
+      --s3: #232742;
+      --br: rgba(255, 255, 255, .07);
+      --tx: #e8eaf6;
+      --mu: #9098b8;
+      --acc: #6c63ff;
+      --ac2: #a78bfa;
+      --grn: #22d3a5;
+      --ylw: #fbbf24;
+      --cyn: #38bdf8;
+      --pnk: #f472b6;
+      --org: #fb923c;
+      --red: #f87171;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--tx);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #0d0f1a, #1a1040, #0d2040);
+      border-bottom: 1px solid var(--br);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .hdr {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .htitle {
+      font-size: 19px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a78bfa, #6c63ff, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hsub {
+      font-size: 10px;
+      color: var(--mu);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .li {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--mu);
+    }
+
+    .ld {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    /* ── FILTER BAR ── */
+    .fbar {
+      background: var(--s1);
+      border-bottom: 1px solid var(--br);
+      padding: 8px 24px;
+    }
+
+    .fi {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .flbl {
+      font-size: 10px;
+      color: var(--mu);
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .rb {
+      padding: 4px 11px;
+      border-radius: 16px;
+      border: 1px solid var(--br);
+      background: var(--s2);
+      color: var(--mu);
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .18s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .rb:hover {
+      border-color: var(--acc);
+      color: var(--tx);
+    }
+
+    .rb.on {
+      background: linear-gradient(135deg, var(--acc), var(--ac2));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(108, 99, 255, .35);
+    }
+
+    /* ── STATS BAR ── */
+    .sbar {
+      background: var(--s1);
+      padding: 0 24px 10px;
+      border-bottom: 1px solid var(--br);
+    }
+
+    .si {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .sv {
+      font-size: 17px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #6c63ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sl {
+      font-size: 10px;
+      color: var(--mu);
+    }
+
+    .kbadge {
+      background: rgba(34, 211, 165, .12);
+      border: 1px solid rgba(34, 211, 165, .3);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 10px;
+      color: var(--grn);
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    .sg {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .sg2 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .sc {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .sh {
+      background: linear-gradient(135deg, var(--s2), var(--s3));
+      border: 1px solid var(--br);
+      border-radius: 9px;
+      padding: 9px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sn {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ac2);
+    }
+
+    .su {
+      font-size: 9px;
+      color: var(--mu);
+      background: var(--s1);
+      padding: 2px 6px;
+      border-radius: 7px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--s2);
+      border: 1px solid var(--br);
+      border-radius: 8px;
+      padding: 9px 11px;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--cc, #6c63ff);
+      border-radius: 3px 0 0 3px;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--cc, var(--acc));
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .3), 0 0 0 1px var(--cc, var(--acc));
+      background: var(--s3);
+    }
+
+    .card.hl {
+      border-color: var(--grn) !important;
+      box-shadow: 0 0 0 1px var(--grn), 0 5px 18px rgba(34, 211, 165, .13) !important;
+      background: rgba(34, 211, 165, .06) !important;
+    }
+
+    .card.pr {
+      border-color: var(--ylw) !important;
+      box-shadow: 0 0 0 1px var(--ylw), 0 5px 18px rgba(251, 191, 36, .13) !important;
+      background: rgba(251, 191, 36, .06) !important;
+    }
+
+    .card.ul {
+      border-color: var(--cyn) !important;
+      box-shadow: 0 0 0 1px var(--cyn), 0 5px 18px rgba(56, 189, 248, .13) !important;
+      background: rgba(56, 189, 248, .06) !important;
+    }
+
+    .card.dm {
+      opacity: .22;
+      transform: none !important;
+      pointer-events: none;
+    }
+
+    .card.rh {
+      border-color: var(--ac2) !important;
+      box-shadow: 0 0 0 1px var(--ac2), 0 5px 18px rgba(167, 139, 250, .18) !important;
+    }
+
+    .card.apb {
+      background: rgba(34, 211, 165, .07);
+    }
+
+    .card.sc-m {
+      background: rgba(251, 191, 36, .05);
+    }
+
+    .card.ret-m {
+      background: rgba(248, 113, 113, .04);
+    }
+
+    .ccode {
+      font-size: 9px;
+      color: var(--mu);
+      font-weight: 600;
+      letter-spacing: .4px;
+      margin-bottom: 2px;
+    }
+
+    .cname {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--tx);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .cft {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cuc {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--cc, var(--acc));
+    }
+
+    .cbadge {
+      font-size: 8px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: 600;
+      border: 1px solid var(--cc, var(--br));
+      color: var(--cc, var(--mu));
+      opacity: .8;
+    }
+
+    .cpre {
+      display: flex;
+      gap: 2px;
+      flex-wrap: wrap;
+      margin-top: 3px;
+    }
+
+    .pch {
+      font-size: 8px;
+      padding: 1px 4px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 3px;
+      color: var(--mu);
+    }
+
+    .sttbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 3px;
+      flex-wrap: wrap;
+    }
+
+    .stt {
+      font-size: 8px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+
+    .stt.a {
+      background: rgba(34, 211, 165, .18);
+      color: var(--grn);
+    }
+
+    .stt.s {
+      background: rgba(251, 191, 36, .15);
+      color: var(--ylw);
+    }
+
+    .stt.r {
+      background: rgba(248, 113, 113, .15);
+      color: var(--red);
+    }
+
+    .nota {
+      font-size: 9px;
+      color: var(--grn);
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      margin: 8px 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--br), transparent);
+    }
+
+    .dvtx {
+      display: inline-block;
+      background: var(--bg);
+      padding: 0 12px;
+      font-size: 9px;
+      color: var(--mu);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    /* ── RAMAS SECTION ── */
+    .rsec {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--br);
+    }
+
+    .rtitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rtitle span {
+      font-size: 9px;
+      color: var(--mu);
+      font-weight: 400;
+    }
+
+    .rg {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .rcard {
+      background: var(--s2);
+      border: 1px solid var(--br);
+      border-radius: 11px;
+      padding: 13px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .rcard:hover {
+      border-color: var(--ac2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .18);
+    }
+
+    .rcard.on {
+      border-color: var(--acc);
+      background: rgba(108, 99, 255, .09);
+      box-shadow: 0 0 0 1px var(--acc);
+    }
+
+    .rcname {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--tx);
+      margin-bottom: 7px;
+    }
+
+    .rsi {
+      font-size: 9px;
+      color: var(--mu);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .rsd {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .rsec-lbl {
+      font-size: 9px;
+      color: var(--mu);
+      font-weight: 700;
+      margin: 6px 0 3px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+
+    /* ── HINT ── */
+    .hint {
+      text-align: center;
+      padding: 7px;
+      font-size: 9px;
+      color: var(--mu);
+      border-top: 1px solid var(--br);
+      background: var(--s1);
+    }
+
+    .hint strong {
+      color: var(--ac2);
+    }
+
+    /* ── OVERLAY / MODAL ── */
+    .ov {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 200;
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .ov.on {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--s1);
+      border: 1px solid var(--br);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .7);
+      animation: su .2s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    @keyframes su {
+      from {
+        transform: translateY(24px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .mhdr-wrap {
+      padding: 22px 22px 0;
+      flex-shrink: 0;
+    }
+
+    .mhd2 {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .mbar {
+      width: 4px;
+      border-radius: 4px;
+      align-self: stretch;
+      min-height: 42px;
+      flex-shrink: 0;
+    }
+
+    .mclose {
+      margin-left: auto;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--s2);
+      border: 1px solid var(--br);
+      color: var(--mu);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .18s;
+    }
+
+    .mclose:hover {
+      background: var(--s3);
+      color: var(--tx);
+    }
+
+    .mcode {
+      font-size: 10px;
+      color: var(--mu);
+      font-weight: 600;
+      letter-spacing: .4px;
+      margin-bottom: 2px;
+    }
+
+    .mname {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tx);
+      line-height: 1.2;
+    }
+
+    .mmeta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .mbd {
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    /* search bar */
+    .msearch-wrap {
+      padding: 12px 22px 0;
+      flex-shrink: 0;
+    }
+
+    .msearch {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--s2);
+      border: 1px solid var(--br);
+      border-radius: 8px;
+      color: var(--tx);
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .18s;
+    }
+
+    .msearch:focus {
+      border-color: var(--acc);
+    }
+
+    .mtabs {
+      display: flex;
+      gap: 6px;
+      padding: 10px 22px 0;
+      flex-shrink: 0;
+    }
+
+    .mtab {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--br);
+      background: var(--s2);
+      color: var(--mu);
+      font-family: 'Inter', sans-serif;
+      transition: all .18s;
+    }
+
+    .mtab.on {
+      background: var(--acc);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    /* scrollable body */
+    .mbody {
+      overflow-y: auto;
+      padding: 12px 22px 22px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .mbody::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .mbody::-webkit-scrollbar-thumb {
+      background: var(--s3);
+      border-radius: 3px;
+    }
+
+    /* prereq items */
+    .mlist {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mitem {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--s2);
+      border-radius: 6px;
+      padding: 7px 9px;
+      border: 1px solid var(--br);
+      cursor: pointer;
+      transition: all .16s;
+      font-size: 11px;
+    }
+
+    .mitem:hover {
+      background: var(--s3);
+      border-color: var(--acc);
+    }
+
+    .mdot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .msec {
+      margin-top: 12px;
+    }
+
+    .mstit {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--mu);
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* catalog items */
+    .cat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--s2);
+      border-radius: 8px;
+      padding: 10px 11px;
+      border: 1px solid var(--br);
+      margin-bottom: 5px;
+      transition: all .16s;
+    }
+
+    .cat-item:hover {
+      background: var(--s3);
+      border-color: rgba(255, 255, 255, .12);
+    }
+
+    .cat-item.mine {
+      border-color: rgba(244, 114, 182, .4);
+      background: rgba(244, 114, 182, .05);
+    }
+
+    .cat-item.mine-oo {
+      border-color: rgba(34, 211, 165, .35);
+      background: rgba(34, 211, 165, .05);
+    }
+
+    .cat-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--tx);
+    }
+
+    .cat-code {
+      font-size: 9px;
+      color: var(--mu);
+      margin-top: 1px;
+    }
+
+    .cat-pre {
+      font-size: 9px;
+      color: var(--mu);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .cat-uc {
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .tag-mine {
+      font-size: 8px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 4px;
+    }
+
+    /* scrollbar global */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--s3);
+      border-radius: 3px;
+    }
+
+    /* responsive */
+    @media(max-width:1100px) {
+
+      .sg,
+      .sg2 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media(max-width:720px) {
+
+      .sg,
+      .sg2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      main {
+        padding: 12px;
+      }
+
+      header,
+      .fbar,
+      .sbar {
+        padding: 10px 12px;
+      }
+    }
+
+    @media(max-width:460px) {
+
+      .sg,
+      .sg2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── PROFILE ── */
+    .prof-open-btn {
+      padding: 6px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--br);
+      background: var(--s2);
+      color: var(--mu);
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all .18s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .prof-open-btn:hover {
+      border-color: var(--acc);
+      color: var(--tx);
+    }
+
+    .prof-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .prof-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 6px 10px;
+      background: var(--s2);
+      border: 1px solid var(--br);
+      border-radius: 7px;
+    }
+
+    .prof-item.apb {
+      border-color: rgba(34, 211, 165, .35);
+      background: rgba(34, 211, 165, .05);
+    }
+
+    .prof-item.sc {
+      border-color: rgba(251, 191, 36, .35);
+      background: rgba(251, 191, 36, .04);
+    }
+
+    .prof-code {
+      font-size: 9px;
+      color: var(--mu);
+      font-weight: 700;
+      min-width: 38px;
+    }
+
+    .prof-name {
+      font-size: 11px;
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .prof-st-sel {
+      padding: 4px 7px;
+      border-radius: 6px;
+      border: 1px solid var(--br);
+      background: var(--s3);
+      color: var(--mu);
+      font-size: 10px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .prof-nota {
+      width: 58px;
+      padding: 4px 6px;
+      background: var(--s3);
+      border: 1px solid var(--br);
+      border-radius: 6px;
+      color: var(--tx);
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      outline: none;
+    }
+
+    .prof-nota:focus {
+      border-color: var(--grn);
+    }
+
+    .prof-sem-hdr {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--ac2);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin: 10px 0 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--br);
+    }
+
+    .psave-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 9px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity .18s;
+      background: linear-gradient(135deg, var(--acc), var(--ac2));
+    }
+
+    .psave-btn:hover {
+      opacity: .88;
+    }
+
+    /* dual-rama filter buttons */
+    .rb.r1 {
+      background: linear-gradient(135deg, var(--acc), var(--ac2));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(108, 99, 255, .35);
+    }
+
+    .rb.r2 {
+      background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, .3);
+    }
+
+    .r-badge {
+      display: inline-block;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .r-badge.r1 {
+      background: rgba(108, 99, 255, .25);
+      color: #c4b5fd;
+    }
+
+    .r-badge.r2 {
+      background: rgba(6, 182, 212, .25);
+      color: #67e8f9;
+    }
+
+    .r-badge.both {
+      background: rgba(34, 211, 165, .2);
+      color: var(--grn);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="hdr">
+      <div>
+        <div class="htitle">Pénsum Computación</div>
+        <div class="hsub">UCV · Facultad de Ciencias · Escuela de Computación</div>
+      </div>
+      <div class="legend">
+        <div class="li">
+          <div class="ld" style="background:#6c63ff"></div>Obligatoria
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#22d3a5"></div>Oblig. Optativa
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#fb923c"></div>Complementaria
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#38bdf8"></div>Laboratorio
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#f472b6"></div>Electiva
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#fbbf24"></div>Serv/TEG
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#22d3a5;border-radius:50%"></div>Aprobada
+        </div>
+        <div class="li">
+          <div class="ld" style="background:#fbbf24;border-radius:50%"></div>Cursando
+        </div>
+      </div>
+      <button class="prof-open-btn" onclick="openProfile()">👤 Mi Perfil</button>
+    </div>
+  </header>
+  <div class="fbar">
+    <div class="fi">
+      <span class="flbl">Rama:</span>
+      <button class="rb on" data-r="all" id="rb-all" onclick="resetRamas()">Todas</button>
+      <button class="rb" data-r="Bases de Datos" onclick="toggleRama('Bases de Datos',this)">Bases de Datos</button>
+      <button class="rb" data-r="Inteligencia Artificial"
+        onclick="toggleRama('Inteligencia Artificial',this)">IA</button>
+      <button class="rb" data-r="Computación Gráfica" onclick="toggleRama('Computación Gráfica',this)">Comp.
+        Gráfica</button>
+      <button class="rb" data-r="Sistemas de Información" onclick="toggleRama('Sistemas de Información',this)">Sist.
+        Información</button>
+      <button class="rb" data-r="Ingeniería de Software" onclick="toggleRama('Ingeniería de Software',this)">Ing.
+        Software</button>
+      <button class="rb" data-r="Tec. Comu. y Redes" onclick="toggleRama('Tec. Comu. y Redes',this)">Tec. Comu. y
+        Redes</button>
+      <button class="rb" data-r="Sist. Distrib. y Paralelos"
+        onclick="toggleRama('Sist. Distrib. y Paralelos',this)">Sist. Dist. y Par.</button>
+      <button class="rb" data-r="Aplicaciones en Internet" onclick="toggleRama('Aplicaciones en Internet',this)">Aplic.
+        Internet</button>
+      <span class="flbl" id="rama-hint" style="margin-left:6px;display:none">↑ clic 2ª vez = Rama 2</span>
+    </div>
+  </div>
+  <div class="sbar">
+    <div class="si">
+      <div><span class="sv">10</span><span class="sl"> sem.</span></div>
+      <div><span class="sv">192+</span><span class="sl"> UC mín.</span></div>
+      <div><span class="sv" id="stat-apb">—</span><span class="sl"> UC aprobadas</span></div>
+      <div><span class="sv" id="stat-sel">—</span><span class="sl"> seleccionada</span></div>
+      <div class="kbadge" id="kbadge"></div>
+    </div>
+  </div>
+  <main>
+    <div class="sg" id="g1"></div>
+    <div class="divider"><span class="dvtx">Semestres VI – X · Electivas · Optativas · Laboratorios</span></div>
+    <div class="sg2" id="g2"></div>
+    <div class="rsec">
+      <div class="rtitle">Ramas de Carrera <span>— clic para filtrar y ver electivas de cada especialización</span>
+      </div>
+      <div class="rg" id="rg"></div>
+    </div>
+  </main>
+  <div class="hint"><strong>Hover</strong> = prelaciones · <strong>Clic materia</strong> = detalles · <strong>Clic
+      Rama</strong> = R1; segundo clic = R2 · <strong>Clic slot</strong> = catálogo</div>
+  <div class="ov" id="ov" onclick="ovClick(event)">
+    <div class="modal" id="modal">
+      <div class="mhdr-wrap">
+        <div class="mhd2">
+          <div class="mbar" id="mbar"></div>
+          <div style="flex:1;min-width:0">
+            <div class="mcode" id="mcode"></div>
+            <div class="mname" id="mname"></div>
+            <div class="mmeta" id="mmeta"></div>
+          </div>
+          <button class="mclose" onclick="closeMod()">×</button>
+        </div>
+      </div>
+      <div class="msearch-wrap" id="msearch-wrap" style="display:none">
+        <input class="msearch" id="msearch" placeholder="🔍 Buscar por nombre o código…" oninput="filterCat()">
+      </div>
+      <div class="mtabs" id="mtabs" style="display:none"></div>
+      <div class="mbody" id="mbody"></div>
+    </div>
+  </div>
+  <!-- Profile modal -->
+  <div class="ov" id="prof-ov" onclick="if(event.target===this)closeProfMod()">
+    <div class="modal" style="max-width:700px">
+      <div class="mhdr-wrap">
+        <div class="mhd2">
+          <div class="mbar" style="background:linear-gradient(180deg,var(--ac2),var(--acc))"></div>
+          <div style="flex:1;min-width:0">
+            <div class="mcode">Perfil Académico</div>
+            <div class="mname" id="prof-title">Mis datos</div>
+          </div>
+          <button class="mclose" onclick="closeProfMod()">×</button>
+        </div>
+      </div>
+      <div class="mbody" id="prof-body"></div>
+    </div>
+  </div>
+  <script>
+    const T = { OBL: { l: 'Obligatoria', c: '#6c63ff' }, OPT: { l: 'Oblig. Optativa', c: '#22d3a5' }, COMP: { l: 'Complementaria', c: '#fb923c' }, LAB: { l: 'Laboratorio', c: '#38bdf8' }, ELEC: { l: 'Electiva', c: '#f472b6' }, SERV: { l: 'Serv/TEG', c: '#fbbf24' } };
+
+    const SUBS = [
+      // I
+      { code: '6201', name: 'Algoritmos y Programación', uc: 6, sem: 1, type: 'OBL', pre: [] },
+      { code: '6301', name: 'Introducción a la Informática', uc: 4, sem: 1, type: 'OBL', pre: [] },
+      { code: '8206', name: 'Matemáticas I', uc: 6, sem: 1, type: 'OBL', pre: [] },
+      { code: '6110', name: 'Matemáticas Discretas I', uc: 5, sem: 1, type: 'OBL', pre: [] },
+      // II
+      { code: '6202', name: 'Algoritmos y Estructuras de Datos', uc: 5, sem: 2, type: 'OBL', pre: ['6201'] },
+      { code: '6001', name: 'Org. y Estr. del Computador I', uc: 6, sem: 2, type: 'OBL', pre: ['6201'] },
+      { code: '8207', name: 'Matemáticas II', uc: 6, sem: 2, type: 'OBL', pre: ['8206'] },
+      { code: '6107', name: 'Matemáticas Discretas II', uc: 4, sem: 2, type: 'OBL', pre: ['6110'] },
+      // III – 6002 prereq corregido: 6001+6201; sin 6108
+      { code: '6203', name: 'Ingeniería de Software', uc: 5, sem: 3, type: 'OBL', pre: ['6202', '6301'] },
+      { code: '6002', name: 'Org. y Estr. del Computador II', uc: 5, sem: 3, type: 'OBL', pre: ['6001', '6201'] },
+      { code: '8208', name: 'Matemáticas III', uc: 6, sem: 3, type: 'OBL', pre: ['8207'] },
+      { code: '6108', name: 'Matemáticas Discretas III', uc: 4, sem: 3, type: 'OBL', pre: ['6202', '8207', '6107'] },
+      { code: '0030', name: 'Inglés I (*)', uc: 4, sem: 3, type: 'COMP', pre: [] },
+      // IV – 6108 aquí (movido de III), 6302 eliminada de IV
+      { code: '6004', name: 'Sistemas Operativos', uc: 6, sem: 4, type: 'OBL', pre: ['6002', '6202'] },
+      { code: '6303', name: 'Bases de Datos', uc: 5, sem: 4, type: 'OBL', pre: ['6203', '6107'] },
+      { code: '6104', name: 'Probabilidad y Estadística', uc: 5, sem: 4, type: 'OBL', pre: ['8208', '6202', '6107'] },
+      { code: '0031', name: 'Inglés II (*)', uc: 4, sem: 4, type: 'COMP', pre: [] },
+      // V – 6302 aquí; Lenguajes prelado por 6303+6003; Cálculo por 6104
+      { code: '6204', name: 'Lenguajes de Programación', uc: 5, sem: 5, type: 'OBL', pre: ['6002', '6303'] },
+      { code: '6302', name: 'Sistemas de Información', uc: 5, sem: 5, type: 'OBL', pre: ['6203'] },
+      { code: '6003', name: 'Comunicación de Datos', uc: 6, sem: 5, type: 'OBL', pre: ['6002', '6202', '8208', '6303'] },
+      { code: '6105', name: 'Cálculo Científico', uc: 5, sem: 5, type: 'OBL', pre: ['6104'] },
+      // VI
+      { code: 'VI-OO1', name: 'Obligatoria Optativa 1', uc: 5, sem: 6, type: 'OPT', pre: [], virt: true, slot: 'OO' },
+      { code: 'VI-OO2', name: 'Obligatoria Optativa 2', uc: 5, sem: 6, type: 'OPT', pre: [], virt: true, slot: 'OO' },
+      { code: 'VI-EL', name: 'Electiva (op. 1)', uc: 5, sem: 6, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'VI-CMP', name: 'Complementaria / PCI (*)', uc: 3, sem: 6, type: 'COMP', pre: [], virt: true, slot: 'COMP' },
+      { code: 'VI-SC', name: 'Servicio Comunitario', uc: 0, sem: 6, type: 'SERV', pre: [], virt: true },
+      { code: 'VI-SSC', name: 'Sem. Servicio Comunitario', uc: 0, sem: 6, type: 'SERV', pre: [], virt: true },
+      // VII
+      { code: 'VII-O1', name: 'Electiva (op. 1)', uc: 5, sem: 7, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'VII-O2', name: 'Electiva (op. 2)', uc: 5, sem: 7, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'VII-EL', name: 'Electiva libre', uc: 5, sem: 7, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'VII-LAB', name: 'Laboratorio (*)', uc: 3, sem: 7, type: 'LAB', pre: [], virt: true },
+      // VIII
+      { code: 'VIII-O1', name: 'Electiva (op. 1)', uc: 5, sem: 8, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'VIII-O2', name: 'Electiva (op. 2)', uc: 5, sem: 8, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'VIII-PAS', name: 'Pasantía', uc: 5, sem: 8, type: 'SERV', pre: [], virt: true },
+      { code: 'VIII-CMP', name: 'Complementaria / PCI', uc: 3, sem: 8, type: 'COMP', pre: [], virt: true, slot: 'COMP' },
+      // IX
+      { code: 'IX-O2', name: 'Electiva (op. 2)', uc: 5, sem: 9, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'IX-EL', name: 'Electiva libre', uc: 5, sem: 9, type: 'ELEC', pre: [], virt: true, slot: 'ELEC' },
+      { code: 'IX-CMP', name: 'Complementaria / PCI (*)', uc: 3, sem: 9, type: 'COMP', pre: [], virt: true, slot: 'COMP' },
+      { code: 'IX-SEM', name: 'Seminario', uc: 5, sem: 9, type: 'SERV', pre: [], virt: true },
+      // X
+      { code: 'X-TEG', name: 'Trabajo Especial de Grado', uc: 15, sem: 10, type: 'SERV', pre: ['IX-SEM'], virt: true },
+    ];
+
+    const OBL_OPT = [
+      { code: '6012', name: 'Redes de Computadoras', uc: 6, pre: 'Comunicación de Datos + Sistemas Operativos' },
+      { code: '6311', name: 'Administración de Bases de Datos', uc: 5, pre: 'Bases de Datos' },
+      { code: '6211', name: 'Interacción Humano-Computador', uc: 5, pre: 'Lenguajes de Programación' },
+      { code: '6221', name: 'Aplicaciones con la Tecnología Internet', uc: 5, pre: 'Sist. Operativos + Lenguajes + Com. Datos' },
+    ];
+
+    const ELEC_CAT = [
+      { code: '6321', name: 'Análisis y Especificación de SI', uc: 5, pre: 'BD + Sist. Información', ramas: ['Sistemas de Información'] },
+      { code: '6322', name: 'Diseño de Sistemas de Información', uc: 5, pre: 'BD + Sist. Información', ramas: ['Sistemas de Información'] },
+      { code: '6323', name: 'Construcción de SI', uc: 5, pre: 'BD + Sist. Información', ramas: ['Sistemas de Información'] },
+      { code: '6324', name: 'Sist. BD Orientadas a Objeto', uc: 5, pre: 'BD + Lenguajes de Prog.', ramas: ['Bases de Datos'] },
+      { code: '6346', name: 'Sist. BD Distribuidas', uc: 5, pre: 'BD + Com. Datos', ramas: ['Bases de Datos'] },
+      { code: '6345', name: 'Almacenes de Datos', uc: 5, pre: 'Bases de Datos', ramas: ['Bases de Datos'] },
+      { code: '6325', name: 'Inteligencia Artificial', uc: 5, pre: 'Bases de Datos', ramas: ['Inteligencia Artificial'] },
+      { code: '6330', name: 'Agentes Inteligentes', uc: 5, pre: 'Inteligencia Artificial', ramas: ['Inteligencia Artificial'] },
+      { code: '6213', name: 'Minería de Datos', uc: 5, pre: 'BD + Prob. y Estadística', ramas: ['Bases de Datos', 'Inteligencia Artificial', 'Sist. Distrib. y Paralelos'] },
+      { code: '6331', name: 'Sistemas Evolutivos', uc: 5, pre: 'Inteligencia Artificial', ramas: ['Inteligencia Artificial'] },
+      { code: '6329', name: 'Tópicos en Inteligencia Artificial', uc: 5, pre: 'Inteligencia Artificial', ramas: ['Inteligencia Artificial'] },
+      { code: '6222', name: 'Algoritmos Distribuidos', uc: 5, pre: 'Sist. Op. + Com. Datos', ramas: ['Sist. Distrib. y Paralelos'] },
+      { code: '6245', name: 'Aplicaciones con Objetos Distribuidos', uc: 5, pre: 'Sist. Op. + Com. Datos + Lenguajes', ramas: ['Sist. Distrib. y Paralelos'] },
+      { code: '6241', name: 'Desarrollo de Aplic. Distribuidas', uc: 5, pre: 'Sist. Op. + Com. Datos + Lenguajes', ramas: ['Sist. Distrib. y Paralelos'] },
+      { code: '6543', name: 'Computación de Alto Rendimiento', uc: 5, pre: 'Lenguajes + Com. Datos + Sist. Op.', ramas: ['Sist. Distrib. y Paralelos'] },
+      { code: '6025', name: 'Fundamentos de Prog. Paralela', uc: 5, pre: 'Lenguajes de Programación', ramas: ['Sist. Distrib. y Paralelos'] },
+      { code: '6234', name: 'Construcción de Aplicaciones Paralelas', uc: 5, pre: 'Fundamentos de Prog. Paralela', ramas: ['Sist. Distrib. y Paralelos'] },
+      { code: '6223', name: 'Actividades en Ingeniería de Software', uc: 5, pre: 'Lenguajes de Programación', ramas: ['Ingeniería de Software'] },
+      { code: '6235', name: 'Arquitecturas de Software', uc: 5, pre: 'Lenguajes de Programación', ramas: ['Ingeniería de Software'] },
+      { code: '6240', name: 'Patrones de Diseño y Frameworks', uc: 5, pre: 'Lenguajes de Programación', ramas: ['Ingeniería de Software'] },
+      { code: '6236', name: 'Interfaces Sociales', uc: 5, pre: 'Interacción Humano-Computador', ramas: ['Ingeniería de Software'] },
+      { code: '6215', name: 'Tópicos Avanzados en IHC', uc: 5, pre: 'Interacción Humano-Computador', ramas: ['Ingeniería de Software'] },
+      { code: '6212', name: 'Lenguajes y Compiladores', uc: 5, pre: 'Lenguajes de Programación', ramas: [] },
+      { code: '6226', name: 'Técnicas Avanzadas de Programación', uc: 5, pre: 'Lenguajes de Programación', ramas: ['Inteligencia Artificial', 'Ingeniería de Software'] },
+      { code: '6246', name: 'Aplicaciones con Tecnología Internet II', uc: 5, pre: 'Aplic. con Tecnología Internet', ramas: ['Aplicaciones en Internet', 'Sist. Distrib. y Paralelos'] },
+      { code: '6023', name: 'Comercio Electrónico', uc: 5, pre: 'Aplic. con Tecnología Internet', ramas: ['Tec. Comu. y Redes', 'Aplicaciones en Internet'] },
+      { code: '6224', name: 'Introducción a la Computación Gráfica', uc: 5, pre: 'Ing. de Software + Cálculo Científico', ramas: ['Computación Gráfica'] },
+      { code: '6231', name: 'Fundamentos y Técnicas en Comp. Gráfica', uc: 5, pre: 'Intro a la Comp. Gráfica', ramas: ['Computación Gráfica'] },
+      { code: '6232', name: 'Procesamiento Digital de Imágenes', uc: 5, pre: 'Intro a la Comp. Gráfica', ramas: ['Computación Gráfica'] },
+      { code: '6244', name: 'Tópicos en Computación Gráfica', uc: 5, pre: 'Fundamentos Comp. Gráfica', ramas: ['Computación Gráfica'] },
+      { code: '6011', name: 'Redes de Computadoras', uc: 6, pre: 'Com. Datos + Sist. Operativos', ramas: ['Tec. Comu. y Redes'] },
+      { code: '6024', name: 'Diseño de Redes', uc: 5, pre: 'Redes de Computadoras', ramas: ['Tec. Comu. y Redes'] },
+      { code: '6028', name: 'Calidad de Servicio en Redes', uc: 5, pre: 'Redes de Computadoras', ramas: ['Tec. Comu. y Redes'] },
+      { code: '6045', name: 'Redes Móviles e Inalámbricas', uc: 5, pre: 'Redes de Computadoras', ramas: ['Tec. Comu. y Redes'] },
+      { code: '6021', name: 'Adm. de Redes y Sistemas', uc: 5, pre: 'Redes de Computadoras', ramas: ['Tec. Comu. y Redes'] },
+      { code: '6022', name: 'Seguridad en Redes de Computadoras', uc: 5, pre: 'Redes de Computadoras', ramas: ['Tec. Comu. y Redes'] },
+      { code: '6248', name: 'Desarrollo de Aplicaciones Móviles', uc: 5, pre: 'Aplic. con Tecnología Internet', ramas: ['Aplicaciones en Internet'] },
+      { code: '6332', name: 'Innovación Tecnológica', uc: 5, pre: 'Lenguajes de Programación', ramas: ['Sistemas de Información'] },
+      { code: '6344', name: 'Planificación Estratégica de Sistemas', uc: 5, pre: 'Sistemas de Información', ramas: ['Sistemas de Información'] },
+      { code: '6545', name: 'Inteligencia de Negocio', uc: 5, pre: 'BD + Sist. de Información', ramas: ['Sistemas de Información'] },
+      { code: '6547', name: 'Gestión de Procesos de Negocio', uc: 5, pre: 'Sistemas de Información', ramas: ['Sistemas de Información'] },
+      { code: '6549', name: 'Bases de Datos NoSQL', uc: 5, pre: 'Bases de Datos', ramas: ['Bases de Datos', 'Sist. Distrib. y Paralelos'] },
+      { code: '6111', name: 'Teoría de Colas y Simulación', uc: 5, pre: 'Probabilidad y Estadística', ramas: [] },
+      { code: '6122', name: 'Cálculo Científico II', uc: 5, pre: 'Cálculo Científico', ramas: [] },
+      { code: '6134', name: 'Programación Matemática I', uc: 5, pre: 'Probabilidad y Estadística', ramas: [] },
+      { code: '6027', name: 'Sistemas Operativos Avanzados', uc: 5, pre: 'Sist. Op. + Com. Datos', ramas: [] },
+      { code: '6046', name: 'Arquitecturas Avanzadas', uc: 5, pre: 'Sist. Op. + Lenguajes', ramas: [] },
+      { code: '6242', name: 'Enseñanza Asistida por Computador', uc: 5, pre: 'Lenguajes de Programación', ramas: [] },
+    ];
+
+    const COMP_CAT = [
+      { code: '0007', name: 'Deportes', uc: 0 },
+      { code: '0161', name: 'Deportes II', uc: 0 },
+      { code: '0206', name: 'Actividad Coral', uc: 0 },
+      { code: '0220', name: 'Actividad Coral II', uc: 0 },
+      { code: '0469', name: 'Manejo Integral de Residuos Sólidos', uc: 0 },
+      { code: '1927', name: 'Filosofía de la Ciencia', uc: 0 },
+    ];
+
+    const RAMAS = [
+      { name: 'Bases de Datos', oo: ['6012', '6211', '6221'], elec: ['6213', '6311', '6549'] },
+      { name: 'Inteligencia Artificial', oo: ['6012', '6211', '6221', '6311'], elec: ['6213', '6226', '6329'] },
+      { name: 'Computación Gráfica', oo: ['6012', '6211', '6221', '6311'], elec: ['6224', '6231', '6232'] },
+      { name: 'Sistemas de Información', oo: ['6012', '6211', '6221', '6311'], elec: ['6332', '6344', '6545', '6547'] },
+      { name: 'Ingeniería de Software', oo: ['6012', '6311', '6221'], elec: ['6226', '6211', '6215', '6240'] },
+      { name: 'Tec. Comu. y Redes', oo: ['6311', '6211', '6221'], elec: ['6012', '6021', '6022', '6023', '6024', '6045'] },
+      { name: 'Sist. Distrib. y Paralelos', oo: ['6211', '6221'], elec: ['6012', '6213', '6025', '6222', '6246', '6549'] },
+      { name: 'Aplicaciones en Internet', oo: ['6311', '6012'], elec: ['6211', '6221', '6246', '6023', '6248'] },
+    ];
+
+    // ── Build index & compute unlocks ──
+    const byCode = {};
+    SUBS.forEach(s => { byCode[s.code] = s; s.unlocks = []; });
+    SUBS.forEach(s => s.pre.forEach(p => { if (byCode[p]) byCode[p].unlocks.push(s.code); }));
+    const SNMS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+    let rama1 = null, rama2 = null;
+    let USER_PROFILE = { nombre: '', kardex: {} };
+    // Load profile from API or localStorage (overrides kardex.js)
+    try {
+      let _stored = null;
+      if (window.api) {
+        _stored = window.api.loadProfile();
+      } else {
+        const storedStr = localStorage.getItem('pensum_ucv_profile');
+        if (storedStr) _stored = JSON.parse(storedStr);
+      }
+      if (_stored) {
+        USER_PROFILE = _stored;
+        Object.keys(KARDEX).forEach(k => delete KARDEX[k]);
+        Object.assign(KARDEX, USER_PROFILE.kardex);
+      }
+    } catch (e) { }
+
+    // ── UC aprobadas ──
+    const UC_APB = Object.values(KARDEX).filter(k => k.st === 'apb').reduce((a, k) => {
+      const s = SUBS.find(x => x.code === Object.keys(KARDEX).find(c => KARDEX[c] === k));
+      return a + (s ? s.uc : 0);
+    }, 0);
+    // simpler: sum uc of approved codes
+    const apbUC = Object.entries(KARDEX).filter(([, k]) => k.st === 'apb').reduce((a, [code]) => {
+      const s = byCode[code]; return a + (s ? s.uc : 0);
+    }, 0);
+    document.getElementById('stat-apb').textContent = apbUC || KARDEX_RESUMEN.UC_aprobadas;
+    const _dispName = USER_PROFILE.nombre || KARDEX_RESUMEN.nombre;
+    document.getElementById('kbadge').textContent = USER_PROFILE.nombre
+      ? `👤 ${USER_PROFILE.nombre}`
+      : `${KARDEX_RESUMEN.nombre} · P.G: ${KARDEX_RESUMEN.promedio_general}`;
+
+    function semUC(n) { return SUBS.filter(s => s.sem === n && !s.virt).reduce((a, s) => a + s.uc, 0); }
+
+    function cardClass(k) {
+      if (!k) return '';
+      if (k.st === 'apb') return ' apb';
+      if (k.st === 'sc') return ' sc-m';
+      return '';
+    }
+
+    function buildCard(s) {
+      const t = T[s.type], k = KARDEX[s.code];
+      const d = document.createElement('div');
+      d.className = 'card' + cardClass(k);
+      d.id = 'c-' + s.code; d.dataset.code = s.code;
+      d.style.setProperty('--cc', t.c);
+      const chips = s.pre.length ? `<div class="cpre">${s.pre.map(p => `<span class="pch">${p}</span>`).join('')}</div>` : '';
+      let stbar = '';
+      if (!s.virt && k) {
+        if (k.st === 'apb') {
+          const n = k.nota != null ? `<span class="nota">${k.nota}</span>` : `<span style="font-size:8px;color:var(--ylw)">sin calif.</span>`;
+          stbar = `<div class="sttbar"><span class="stt a">✓ Aprobada</span>${n}</div>`;
+        } else if (k.st === 'sc') {
+          stbar = `<div class="sttbar"><span class="stt s">★ Cursando</span></div>`;
+        }
+      } else if (!s.virt) {
+        stbar = `<div class="sttbar"><span class="stt" style="background:rgba(144,152,184,.1);color:var(--mu)">Pendiente</span></div>`;
+      }
+      const virtHint = s.virt && (s.slot === 'OO' || s.slot === 'ELEC' || s.slot === 'COMP') ? `<div style="font-size:8px;color:var(--mu);margin-top:3px">↗ clic: ver catálogo</div>` : '';
+      d.innerHTML = `<div class="ccode">${s.virt ? '' : s.code}</div><div class="cname">${s.name}</div>
+<div class="cft"><span class="cuc">${s.uc > 0 ? s.uc + ' UC' : '—'}</span><span class="cbadge">${t.l}</span></div>
+${chips}${stbar}${virtHint}`;
+      d.addEventListener('mouseenter', () => hlRel(s.code));
+      d.addEventListener('mouseleave', clrHl);
+      d.addEventListener('click', () => s.virt && (s.slot === 'OO' || s.slot === 'ELEC' || s.slot === 'COMP') ? openCat(s) : openMod(s.code));
+      return d;
+    }
+    function buildSem(n) {
+      const col = document.createElement('div'); col.className = 'sc'; col.dataset.sem = n;
+      const uc = semUC(n);
+      const hdr = document.createElement('div'); hdr.className = 'sh';
+      hdr.innerHTML = `<span class="sn">Semestre ${SNMS[n - 1]}</span>${uc ? `<span class="su">${uc} UC</span>` : ''}`;
+      col.appendChild(hdr);
+      SUBS.filter(s => s.sem === n).forEach(s => col.appendChild(buildCard(s)));
+      return col;
+    }
+    for (let i = 1; i <= 5; i++)document.getElementById('g1').appendChild(buildSem(i));
+    for (let i = 6; i <= 10; i++)document.getElementById('g2').appendChild(buildSem(i));
+
+    // ── Ramas cards ──
+    RAMAS.forEach(r => {
+      const c = document.createElement('div'); c.className = 'rcard';
+      const OOnames = r.oo.map(cd => OBL_OPT.find(x => x.code === cd)?.name || cd);
+      const ELnames = r.elec.map(cd => ELEC_CAT.find(x => x.code === cd)?.name || cd);
+      c.innerHTML = `<div class="rcname">${r.name}</div>
+<div class="rsec-lbl">Oblig. Optativas (elegir 2)</div>${OOnames.map(n => `<div class="rsi"><div class="rsd" style="background:#22d3a5"></div>${n}</div>`).join('')}
+<div class="rsec-lbl" style="margin-top:6px">Electivas necesarias</div>${ELnames.map(n => `<div class="rsi"><div class="rsd" style="background:#f472b6"></div>${n}</div>`).join('')}`;
+      c.addEventListener('click', () => toggleRama(r.name));
+      document.getElementById('rg').appendChild(c);
+    });
+
+    // ── Highlight ──
+    function hlRel(code) {
+      clrHl();
+      const s = byCode[code]; if (!s) return;
+      document.querySelectorAll('.card').forEach(c => c.classList.add('dm'));
+      const self = document.getElementById('c-' + code);
+      if (self) { self.classList.remove('dm'); self.classList.add('hl'); }
+      s.pre.forEach(p => { const el = document.getElementById('c-' + p); if (el) { el.classList.remove('dm'); el.classList.add('pr'); } });
+      s.unlocks.forEach(u => { const el = document.getElementById('c-' + u); if (el) { el.classList.remove('dm'); el.classList.add('ul'); } });
+    }
+    function clrHl() { document.querySelectorAll('.card').forEach(c => c.classList.remove('dm', 'hl', 'pr', 'ul')); }
+
+    // ── Subject modal ──
+    function openMod(code) {
+      const s = byCode[code]; if (!s) return;
+      const t = T[s.type], k = KARDEX[code];
+      document.getElementById('mbar').style.background = t.c;
+      document.getElementById('mcode').textContent = s.virt ? `Semestre ${SNMS[s.sem - 1]}` : `Código: ${code}`;
+      document.getElementById('mname').textContent = s.name;
+      let meta = `<span class="mbd" style="color:${t.c};border-color:${t.c}">${t.l}</span>
+<span class="mbd" style="color:var(--mu);border-color:var(--br)">${s.uc > 0 ? s.uc + ' UC' : 'Sin UC'}</span>
+<span class="mbd" style="color:var(--ac2);border-color:var(--ac2)">Sem. ${SNMS[s.sem - 1]}</span>`;
+      if (k) {
+        if (k.st === 'apb') meta += `<span class="mbd" style="color:var(--grn);border-color:var(--grn)">✓ Aprobada${k.nota != null ? ' · ' + k.nota : ' (sin calif.)'}${k.nota_manual ? ' *manual' : ''}${k.retiradas ? ` · ${k.retiradas} retiros prev.` : ''}</span>`;
+        else if (k.st === 'sc') meta += `<span class="mbd" style="color:var(--ylw);border-color:var(--ylw)">★ Cursando (SC)</span>`;
+        if (k.periodo) meta += `<span class="mbd" style="color:var(--mu);border-color:var(--br)">📅 ${k.periodo}</span>`;
+      }
+      document.getElementById('mmeta').innerHTML = meta;
+      document.getElementById('msearch-wrap').style.display = 'none';
+      document.getElementById('mtabs').style.display = 'none';
+      let body = '';
+      if (s.pre.length) {
+        body += `<div class="msec"><div class="mstit">🔒 Prelaciones (debes aprobar antes)</div><div class="mlist">`;
+        s.pre.forEach(p => {
+          const ps = byCode[p], pk = KARDEX[p];
+          const tick = pk?.st === 'apb' ? ' <span style="color:var(--grn)">✓</span>' : '';
+          body += `<div class="mitem" onclick="closeMod();openMod('${p}')"><div class="mdot" style="background:${ps ? T[ps.type].c : '#999'}"></div><span><strong>${p}</strong>${ps ? ' — ' + ps.name : ''}</span>${tick}</div>`;
+        });
+        body += `</div></div>`;
+      } else body += `<div class="msec"><div class="mstit" style="color:var(--grn)">✅ Sin prelaciones — puedes inscribirla desde el primer semestre</div></div>`;
+      if (s.unlocks.length) {
+        body += `<div class="msec"><div class="mstit">🔓 Desbloquea estas materias</div><div class="mlist">`;
+        s.unlocks.forEach(u => {
+          const us = byCode[u], uk = KARDEX[u];
+          const tick = uk?.st === 'apb' ? ' <span style="color:var(--grn)">✓</span>' : '';
+          body += `<div class="mitem" onclick="closeMod();openMod('${u}')"><div class="mdot" style="background:${us ? T[us.type].c : '#999'}"></div><span><strong>${u}</strong>${us ? ' — ' + us.name : ''}</span>${tick}</div>`;
+        });
+        body += `</div></div>`;
+      }
+      document.getElementById('mbody').innerHTML = body;
+      document.getElementById('stat-sel').textContent = s.name.split(' ').slice(0, 3).join(' ') + (s.name.split(' ').length > 3 ? '…' : '');
+      document.getElementById('ov').classList.add('on');
+    }
+
+    // ── Catalog modal (electivas/OO/COMP) ──
+    let _catData = [], _isOO = false, _isCOMP = false;
+    function openCat(s) {
+      _isOO = s.slot === 'OO';
+      _isCOMP = s.slot === 'COMP';
+      const rd1 = rama1 ? RAMAS.find(r => r.name === rama1) : null;
+      const rd2 = rama2 ? RAMAS.find(r => r.name === rama2) : null;
+      const t = _isCOMP ? T.COMP : (_isOO ? T.OPT : T.ELEC);
+      document.getElementById('mbar').style.background = t.c;
+      let titleSuffix = '';
+      if (!_isCOMP && !_isOO) {
+        if (rd1 && rd2) titleSuffix = ` · ${rd1.name} + ${rd2.name}`;
+        else if (rd1) titleSuffix = ` · ${rd1.name}`;
+        else if (rd2) titleSuffix = ` · ${rd2.name}`;
+      }
+      document.getElementById('mcode').textContent = _isCOMP ? 'Materias Complementarias' : (_isOO ? 'Obligatorias Optativas — elegir 2 de 4' : 'Catálogo de Electivas');
+      document.getElementById('mname').textContent = _isCOMP ? 'Catálogo de Complementarias' : (_isOO ? 'Obligatorias Optativas' : 'Electivas' + titleSuffix);
+      let metaHtml = `<span class="mbd" style="color:var(--mu);border-color:var(--br)">Semestre ${SNMS[s.sem - 1]}</span>`;
+      if (_isCOMP) metaHtml += `<span class="mbd" style="color:var(--org);border-color:var(--org)">Complementaria</span>`;
+      else if (rd1) metaHtml += `<span class="mbd" style="color:var(--ac2);border-color:var(--ac2)"><span class="r-badge r1">R1</span> ${rd1.name}</span>`;
+      if (rd2 && !_isCOMP) metaHtml += `<span class="mbd" style="color:#67e8f9;border-color:#06b6d4"><span class="r-badge r2">R2</span> ${rd2.name}</span>`;
+      document.getElementById('mmeta').innerHTML = metaHtml;
+      document.getElementById('msearch-wrap').style.display = (_isOO || _isCOMP) ? 'none' : 'block';
+      document.getElementById('msearch').value = '';
+      const tabsEl = document.getElementById('mtabs');
+      if (!_isOO && !_isCOMP) {
+        tabsEl.style.display = 'flex';
+        const hasMine = rd1 || rd2;
+        tabsEl.innerHTML = `<button class="mtab on" id="tab-all" onclick="switchTab('all',this)">Todas</button>`
+          + (hasMine ? `<button class="mtab" id="tab-mine" onclick="switchTab('mine',this)">★ Mis ramas</button>` : '');
+      } else tabsEl.style.display = 'none';
+      _catData = _isCOMP ? COMP_CAT : (_isOO ? OBL_OPT : ELEC_CAT);
+      renderCat();
+      document.getElementById('stat-sel').textContent = _isCOMP ? 'Complementarias' : (_isOO ? 'Optativas' : 'Electivas');
+      document.getElementById('ov').classList.add('on');
+    }
+    let _activeTab = 'all';
+    function switchTab(tab, btn) {
+      _activeTab = tab;
+      document.querySelectorAll('.mtab').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      renderCat();
+    }
+    function filterCat() {
+      renderCat(document.getElementById('msearch').value.toLowerCase());
+    }
+    function renderCat(q = '') {
+      if (_isCOMP) {
+        document.getElementById('mbody').innerHTML = COMP_CAT.map(e =>
+          `<div class="cat-item" style="border-color:rgba(251,146,60,.25);background:rgba(251,146,60,.05)">
+<div style="flex:1;min-width:0">
+  <div class="cat-name">${e.name}</div>
+  <div class="cat-code">Código: ${e.code}</div>
+</div>
+<div class="cat-uc" style="color:var(--org)">COMP</div>
+</div>`).join('');
+        return;
+      }
+      const rd1 = rama1 ? RAMAS.find(r => r.name === rama1) : null;
+      const rd2 = rama2 ? RAMAS.find(r => r.name === rama2) : null;
+      const set1 = rd1 ? new Set(_isOO ? rd1.oo : rd1.elec) : null;
+      const set2 = rd2 ? new Set(_isOO ? rd2.oo : rd2.elec) : null;
+      let items = _isOO ? OBL_OPT : ELEC_CAT;
+      if (_activeTab === 'mine' && (set1 || set2))
+        items = items.filter(e => (set1 && set1.has(e.code)) || (set2 && set2.has(e.code)));
+      if (q) items = items.filter(e => e.name.toLowerCase().includes(q) || e.code.includes(q));
+      const sorted = [...items].sort((a, b) => {
+        const am = ((set1 && set1.has(a.code)) || (set2 && set2.has(a.code))) ? 0 : 1;
+        const bm = ((set1 && set1.has(b.code)) || (set2 && set2.has(b.code))) ? 0 : 1;
+        return am - bm || a.name.localeCompare(b.name);
+      });
+      const isOO = _isOO;
+      document.getElementById('mbody').innerHTML = sorted.length ? sorted.map(e => {
+        const in1 = set1 && set1.has(e.code), in2 = set2 && set2.has(e.code);
+        let tag = '';
+        if (in1 && in2) tag = `<span class="r-badge both">★ Ambas ramas</span>`;
+        else if (in1) tag = `<span class="r-badge r1">★ Rama 1</span>`;
+        else if (in2) tag = `<span class="r-badge r2">★ Rama 2</span>`;
+        const isMine = in1 || in2;
+        const cls = isMine ? (isOO ? ' mine-oo' : ' mine') : '';
+        return `<div class="cat-item${cls}">
+<div style="flex:1;min-width:0">
+  <div class="cat-name">${e.name}${tag}</div>
+  <div class="cat-code">Código: ${e.code}</div>
+  <div class="cat-pre">📋 Requisito: ${e.pre || e.prereq}</div>
+</div>
+<div class="cat-uc" style="color:${isOO ? 'var(--grn)' : 'var(--pnk)'}">${e.uc} UC</div>
+</div>`;
+      }).join('') : `<div style="color:var(--mu);font-size:12px;text-align:center;padding:20px">Sin resultados</div>`;
+    }
+
+    // ── Close modal ──
+    function closeMod() { document.getElementById('ov').classList.remove('on'); document.getElementById('stat-sel').textContent = '—'; _activeTab = 'all'; }
+    // ── Dual-Rama toggle ──
+    function toggleRama(name) {
+      if (rama1 === name) { rama1 = rama2; rama2 = null; }
+      else if (rama2 === name) { rama2 = null; }
+      else if (!rama1) { rama1 = name; }
+      else if (!rama2) { rama2 = name; }
+      else { rama2 = name; }
+      _updateRamaUI();
+      _applyRamaFilter();
+    }
+    function resetRamas() {
+      rama1 = null; rama2 = null;
+      _updateRamaUI();
+      _applyRamaFilter();
+    }
+    function _updateRamaUI() {
+      document.querySelectorAll('.rb').forEach(b => {
+        b.classList.remove('on', 'r1', 'r2');
+        const r = b.dataset.r;
+        if (!r || r === 'all') { if (!rama1 && !rama2) b.classList.add('on'); }
+        else if (r === rama1) b.classList.add('r1');
+        else if (r === rama2) b.classList.add('r2');
+      });
+      document.querySelectorAll('.rcard').forEach(c => {
+        const n = c.querySelector('.rcname')?.textContent;
+        c.classList.remove('on'); if (n === rama1 || n === rama2) c.classList.add('on');
+      });
+      const hint = document.getElementById('rama-hint');
+      if (hint) hint.style.display = (rama1 && !rama2) ? 'inline' : 'none';
+    }
+    function _applyRamaFilter() {
+      clrHl();
+      if (!rama1 && !rama2) { document.querySelectorAll('.card').forEach(c => c.classList.remove('rh', 'dm')); return; }
+      const rd1 = rama1 ? RAMAS.find(r => r.name === rama1) : null;
+      const rd2 = rama2 ? RAMAS.find(r => r.name === rama2) : null;
+      const hi1 = rd1 ? new Set([...rd1.oo, ...rd1.elec]) : new Set();
+      const hi2 = rd2 ? new Set([...rd2.oo, ...rd2.elec]) : new Set();
+      const hi = new Set([...hi1, ...hi2]);
+      document.querySelectorAll('.card').forEach(c => {
+        const code = c.dataset.code, s = byCode[code]; if (!s) return;
+        if (hi.has(code)) { c.classList.add('rh'); c.classList.remove('dm'); }
+        else if (s.type === 'OBL' || s.type === 'COMP' || s.virt) { c.classList.remove('rh', 'dm'); }
+        else { c.classList.add('dm'); c.classList.remove('rh'); }
+      });
+    }
+    // keep old name as alias for rcard clicks
+    function filterRama(name) { if (name === 'all') resetRamas(); else toggleRama(name); }
+
+    // ── Profile ──
+    function openProfile() {
+      const body = document.getElementById('prof-body');
+      let html = `<div class="msec" style="margin-top:0">
+  <div class="mstit">👤 Nombre</div>
+  <input class="msearch" id="prof-nombre" value="${(USER_PROFILE.nombre || '').replace(/"/g, '&quot;')}" placeholder="Ej. Ana García" style="margin-bottom:0">
+</div>`;
+      for (let sem = 1; sem <= 5; sem++) {
+        const ss = SUBS.filter(s => s.sem === sem && !s.virt);
+        if (!ss.length) continue;
+        html += `<div class="prof-sem-hdr">📚 Semestre ${SNMS[sem - 1]}</div><div class="prof-grid">`;
+        ss.forEach(s => {
+          const k = KARDEX[s.code] || {};
+          const st = k.st || '', nota = k.nota != null ? k.nota : '';
+          const cls = st === 'apb' ? ' apb' : st === 'sc' ? ' sc' : '';
+          html += `<div class="prof-item${cls}">
+  <span class="prof-code">${s.code}</span>
+  <span class="prof-name">${s.name}</span>
+  <select class="prof-st-sel" data-code="${s.code}" onchange="_profStChange(this)">
+    <option value="">Pendiente</option>
+    <option value="sc"${st === 'sc' ? ' selected' : ''}>Cursando</option>
+    <option value="apb"${st === 'apb' ? ' selected' : ''}>Aprobada</option>
+  </select>
+  <input class="prof-nota" data-code="${s.code}" type="number" min="1" max="20" step="1"
+    placeholder="nota" value="${nota}" style="display:${st === 'apb' ? 'inline-block' : 'none'}">
+</div>`;
+        });
+        html += `</div>`;
+      }
+      html += `<div style="display:flex;gap:8px;margin-top:16px">
+  <button class="psave-btn" onclick="saveProfile()">💾 Guardar perfil</button>
+  <button class="psave-btn" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.35);color:var(--red);max-width:130px" onclick="clearProfile()">🗑 Limpiar</button>
+</div>`;
+      body.innerHTML = html;
+      document.getElementById('prof-ov').classList.add('on');
+    }
+    function _profStChange(sel) {
+      const item = sel.closest('.prof-item');
+      const nota = item.querySelector('.prof-nota');
+      nota.style.display = sel.value === 'apb' ? 'inline-block' : 'none';
+      if (sel.value !== 'apb') nota.value = '';
+      item.className = 'prof-item' + (sel.value === 'apb' ? ' apb' : sel.value === 'sc' ? ' sc' : '');
+    }
+    function saveProfile() {
+      const nombre = (document.getElementById('prof-nombre')?.value || '').trim();
+      const kardex = {};
+      document.querySelectorAll('#prof-body .prof-st-sel').forEach(sel => {
+        const st = sel.value; if (!st) return;
+        const code = sel.dataset.code;
+        const notaEl = document.querySelector(`#prof-body .prof-nota[data-code="${code}"]`);
+        const nota = (notaEl && st === 'apb' && notaEl.value) ? parseInt(notaEl.value) : null;
+        kardex[code] = { st, nota };
+      });
+      const data = { nombre, kardex };
+      if (window.api) {
+        window.api.saveProfile(data);
+      } else {
+        localStorage.setItem('pensum_ucv_profile', JSON.stringify(data));
+      }
+      location.reload();
+    }
+    function clearProfile() {
+      if (!confirm('¿Borrar todos los datos del perfil?')) return;
+      if (window.api) {
+        window.api.clearProfile();
+      } else {
+        localStorage.removeItem('pensum_ucv_profile');
+      }
+      location.reload();
+    }
+    function closeProfMod() { document.getElementById('prof-ov').classList.remove('on'); }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeMod(); closeProfMod(); } });
+  </script>
+</body>
+
+</html>

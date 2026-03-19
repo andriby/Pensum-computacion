@@ -1,0 +1,17 @@
+# Dependencias de Node
+node_modules/
+
+# Directorio de distribución
+dist/
+
+# Logs de error de npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de configuración del sistema
+.DS_Store
+Thumbs.db
+
+# Cache de electron-builder (opcional)
+.electron-builder-cache/
