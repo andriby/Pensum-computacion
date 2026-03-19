@@ -1077,7 +1077,7 @@
         onclick="toggleRama('Sist. Distrib. y Paralelos',this)">Sist. Dist. y Par.</button>
       <button class="rb" data-r="Aplicaciones en Internet" onclick="toggleRama('Aplicaciones en Internet',this)">Aplic.
         Internet</button>
-      <span class="flbl" id="rama-hint" style="margin-left:6px;display:none">↑ clic 2ª vez = Rama 2</span>
+      <span class="flbl" id="rama-hint" style="margin-left:6px;display:none">↑ click 2ª vez = Rama 2</span>
     </div>
   </div>
   <div class="sbar">
@@ -1094,13 +1094,13 @@
     <div class="divider"><span class="dvtx">Semestres VI – X · Electivas · Optativas · Laboratorios</span></div>
     <div class="sg2" id="g2"></div>
     <div class="rsec">
-      <div class="rtitle">Ramas de Carrera <span>— clic para filtrar y ver electivas de cada especialización</span>
+      <div class="rtitle">Ramas de Carrera <span>— click para filtrar y ver electivas de cada especialización</span>
       </div>
       <div class="rg" id="rg"></div>
     </div>
   </main>
   <div class="hint"><strong>Hover</strong> = prelaciones · <strong>Clic materia</strong> = detalles · <strong>Clic
-      Rama</strong> = R1; segundo clic = R2 · <strong>Clic slot</strong> = catálogo</div>
+      Rama</strong> = R1; segundo click = R2 · <strong>Clic slot</strong> = catálogo</div>
   <div class="ov" id="ov" onclick="ovClick(event)">
     <div class="modal" id="modal">
       <div class="mhdr-wrap">
@@ -1243,6 +1243,7 @@
       { code: '6545', name: 'Inteligencia de Negocio', uc: 5, pre: 'BD + Sist. de Información', ramas: ['Sistemas de Información'] },
       { code: '6547', name: 'Gestión de Procesos de Negocio', uc: 5, pre: 'Sistemas de Información', ramas: ['Sistemas de Información'] },
       { code: '6549', name: 'Bases de Datos NoSQL', uc: 5, pre: 'Bases de Datos', ramas: ['Bases de Datos', 'Sist. Distrib. y Paralelos'] },
+      { code: '6311', name: 'Administración de Bases de Datos', uc: 5, pre: 'Bases de Datos', ramas: ['Bases de Datos'] },
       { code: '6111', name: 'Teoría de Colas y Simulación', uc: 5, pre: 'Probabilidad y Estadística', ramas: [] },
       { code: '6122', name: 'Cálculo Científico II', uc: 5, pre: 'Cálculo Científico', ramas: [] },
       { code: '6134', name: 'Programación Matemática I', uc: 5, pre: 'Probabilidad y Estadística', ramas: [] },
@@ -1336,7 +1337,7 @@
       } else if (!s.virt) {
         stbar = `<div class="sttbar"><span class="stt" style="background:rgba(144,152,184,.1);color:var(--mu)">Pendiente</span></div>`;
       }
-      const virtHint = s.virt && (s.slot === 'OO' || s.slot === 'ELEC' || s.slot === 'COMP') ? `<div style="font-size:8px;color:var(--mu);margin-top:3px">↗ clic: ver catálogo</div>` : '';
+      const virtHint = s.virt && (s.slot === 'OO' || s.slot === 'ELEC' || s.slot === 'COMP') ? `<div style="font-size:8px;color:var(--mu);margin-top:3px">↗ click: ver catálogo</div>` : '';
       d.innerHTML = `<div class="ccode">${s.virt ? '' : s.code}</div><div class="cname">${s.name}</div>
 <div class="cft"><span class="cuc">${s.uc > 0 ? s.uc + ' UC' : '—'}</span><span class="cbadge">${t.l}</span></div>
 ${chips}${stbar}${virtHint}`;

@@ -46,7 +46,7 @@ npm run dist
 ---
 
 ## 📂 Estructura del Proyecto
-- `pensum.html`: Interfaz principal y lógica visual.
+- `index.html`: Interfaz principal y lógica visual.
 - `main.js` & `preload.js`: Configuración de Electron para el acceso nativo a archivos.
 - `kardex.js`: Estructura de datos base para el perfil del estudiante.
 - `package.json`: Configuración de dependencias y scripts de compilación.

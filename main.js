@@ -17,7 +17,7 @@ function createWindow() {
 
   // Hides the default menu bar
   win.setMenuBarVisibility(false);
-  win.loadFile('pensum.html');
+  win.loadFile('index.html');
 }
 
 app.whenReady().then(createWindow);
