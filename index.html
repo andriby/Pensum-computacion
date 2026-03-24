@@ -751,19 +751,22 @@
     /* catalog items */
     .cat-item {
       display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 15px;
       background: var(--s2);
-      border-radius: 8px;
-      padding: 10px 11px;
+      border-radius: 12px;
+      padding: 12px 16px;
       border: 1px solid var(--br);
-      margin-bottom: 5px;
-      transition: all .16s;
+      margin-bottom: 8px;
+      transition: all .2s;
     }
 
     .cat-item:hover {
       background: var(--s3);
-      border-color: rgba(255, 255, 255, .12);
+      border-color: rgba(255, 255, 255, .15);
+      transform: translateY(-1px);
     }
 
     .cat-item.mine {
@@ -776,10 +779,36 @@
       background: rgba(34, 211, 165, .05);
     }
 
+    .cat-item.apb,
+    .mitem.apb {
+      border-color: rgba(34, 211, 165, .4) !important;
+      background: rgba(34, 211, 165, .06) !important;
+    }
+
+    .cat-item.sc,
+    .mitem.sc {
+      border-color: rgba(251, 191, 36, .4) !important;
+      background: rgba(251, 191, 36, .06) !important;
+    }
+
+    .cat-item.apb:hover,
+    .mitem.apb:hover {
+      border-color: var(--grn) !important;
+      background: rgba(34, 211, 165, .15) !important;
+    }
+
+    .cat-item.sc:hover,
+    .mitem.sc:hover {
+      border-color: var(--ylw) !important;
+      background: rgba(251, 191, 36, .15) !important;
+    }
+
     .cat-name {
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 700;
       color: var(--tx);
+      display: block;
+      margin-bottom: 2px;
     }
 
     .cat-code {
@@ -795,11 +824,17 @@
       line-height: 1.4;
     }
 
-    .cat-uc {
-      font-size: 11px;
-      font-weight: 700;
+    .cat-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cat-action {
       flex-shrink: 0;
-      margin-top: 1px;
+    }
+
+    .cat-uc {
+      display: none;
     }
 
     .tag-mine {
@@ -892,7 +927,6 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
       padding: 6px 10px;
       background: var(--s2);
       border: 1px solid var(--br);
@@ -1319,40 +1353,78 @@
       return '';
     }
 
-    function buildCard(s) {
-      const t = T[s.type], k = KARDEX[s.code];
+    function buildCard(s, virtData = null) {
+      let code = s.code;
+      let name = s.name;
+      let k = KARDEX[s.code];
+      let t = T[s.type];
+      let preLengths = s.pre;
+      let uc = s.uc;
+      let isVirt = s.virt;
+      let slot = s.slot;
+
+      if (virtData) {
+        code = virtData.code;
+        name = virtData.data.name;
+        k = virtData.k;
+        uc = virtData.data.uc !== undefined ? virtData.data.uc : uc;
+        isVirt = false; // Treat as normal subject so we show status
+      }
+
       const d = document.createElement('div');
       d.className = 'card' + cardClass(k);
-      d.id = 'c-' + s.code; d.dataset.code = s.code;
+      d.id = 'c-' + code; d.dataset.code = code;
       d.style.setProperty('--cc', t.c);
-      const chips = s.pre.length ? `<div class="cpre">${s.pre.map(p => `<span class="pch">${p}</span>`).join('')}</div>` : '';
+      const chips = preLengths.length ? `<div class="cpre">${preLengths.map(p => `<span class="pch">${p}</span>`).join('')}</div>` : '';
       let stbar = '';
-      if (!s.virt && k) {
+      if (!isVirt && k) {
         if (k.st === 'apb') {
           const n = k.nota != null ? `<span class="nota">${k.nota}</span>` : `<span style="font-size:8px;color:var(--ylw)">sin calif.</span>`;
           stbar = `<div class="sttbar"><span class="stt a">✓ Aprobada</span>${n}</div>`;
         } else if (k.st === 'sc') {
           stbar = `<div class="sttbar"><span class="stt s">★ Cursando</span></div>`;
         }
-      } else if (!s.virt) {
+      } else if (!isVirt) {
         stbar = `<div class="sttbar"><span class="stt" style="background:rgba(144,152,184,.1);color:var(--mu)">Pendiente</span></div>`;
       }
-      const virtHint = s.virt && (s.slot === 'OO' || s.slot === 'ELEC' || s.slot === 'COMP') ? `<div style="font-size:8px;color:var(--mu);margin-top:3px">↗ click: ver catálogo</div>` : '';
-      d.innerHTML = `<div class="ccode">${s.virt ? '' : s.code}</div><div class="cname">${s.name}</div>
-<div class="cft"><span class="cuc">${s.uc > 0 ? s.uc + ' UC' : '—'}</span><span class="cbadge">${t.l}</span></div>
+      const virtHint = isVirt && (slot === 'OO' || slot === 'ELEC' || slot === 'COMP') ? `<div style="font-size:8px;color:var(--mu);margin-top:3px">↗ click: ver catálogo</div>` : (virtData ? `<div style="font-size:8px;color:var(--mu);margin-top:3px">↖ click: abrir catálogo (en lugar de ${s.name})</div>` : '');
+
+      d.innerHTML = `<div class="ccode">${isVirt ? '' : code}</div><div class="cname">${name}</div>
+<div class="cft"><span class="cuc">${uc > 0 ? uc + ' UC' : '—'}</span><span class="cbadge">${t.l}</span></div>
 ${chips}${stbar}${virtHint}`;
-      d.addEventListener('mouseenter', () => hlRel(s.code));
+      d.addEventListener('mouseenter', () => hlRel(code));
       d.addEventListener('mouseleave', clrHl);
-      d.addEventListener('click', () => s.virt && (s.slot === 'OO' || s.slot === 'ELEC' || s.slot === 'COMP') ? openCat(s) : openMod(s.code));
+      d.addEventListener('click', () => {
+        if (slot === 'OO' || slot === 'ELEC' || slot === 'COMP') {
+          openCat(s);
+        } else {
+          openMod(code);
+        }
+      });
       return d;
     }
+    window._selOO = []; window._selELEC = []; window._selCOMP = [];
+    Object.keys(KARDEX).forEach(c => {
+      if (OBL_OPT.find(x => x.code === c)) window._selOO.push({ code: c, k: KARDEX[c], data: OBL_OPT.find(x => x.code === c) });
+      else if (ELEC_CAT.find(x => x.code === c)) window._selELEC.push({ code: c, k: KARDEX[c], data: ELEC_CAT.find(x => x.code === c) });
+      else if (COMP_CAT.find(x => x.code === c)) window._selCOMP.push({ code: c, k: KARDEX[c], data: COMP_CAT.find(x => x.code === c) });
+    });
+
     function buildSem(n) {
       const col = document.createElement('div'); col.className = 'sc'; col.dataset.sem = n;
       const uc = semUC(n);
       const hdr = document.createElement('div'); hdr.className = 'sh';
       hdr.innerHTML = `<span class="sn">Semestre ${SNMS[n - 1]}</span>${uc ? `<span class="su">${uc} UC</span>` : ''}`;
       col.appendChild(hdr);
-      SUBS.filter(s => s.sem === n).forEach(s => col.appendChild(buildCard(s)));
+      SUBS.filter(s => s.sem === n).forEach(s => {
+        let virtData = null;
+        if (s.virt && s.slot) {
+          if (s.slot === 'OO' && window._selOO.length) virtData = window._selOO.shift();
+          else if (s.slot === 'ELEC' && window._selELEC.length) virtData = window._selELEC.shift();
+          else if (s.slot === 'COMP' && window._selCOMP.length) virtData = window._selCOMP.shift();
+        }
+        col.appendChild(buildCard(s, virtData));
+      });
       return col;
     }
     for (let i = 1; i <= 5; i++)document.getElementById('g1').appendChild(buildSem(i));
@@ -1373,25 +1445,40 @@ ${chips}${stbar}${virtHint}`;
     // ── Highlight ──
     function hlRel(code) {
       clrHl();
-      const s = byCode[code]; if (!s) return;
+      let s = byCode[code];
+      if (!s) {
+        s = OBL_OPT.find(x => x.code === code) || ELEC_CAT.find(x => x.code === code) || COMP_CAT.find(x => x.code === code);
+      }
+      if (!s) return;
       document.querySelectorAll('.card').forEach(c => c.classList.add('dm'));
       const self = document.getElementById('c-' + code);
       if (self) { self.classList.remove('dm'); self.classList.add('hl'); }
-      s.pre.forEach(p => { const el = document.getElementById('c-' + p); if (el) { el.classList.remove('dm'); el.classList.add('pr'); } });
-      s.unlocks.forEach(u => { const el = document.getElementById('c-' + u); if (el) { el.classList.remove('dm'); el.classList.add('ul'); } });
+
+      const pres = (typeof s.pre === 'string') ? [] : (s.pre || []);
+      pres.forEach(p => { const el = document.getElementById('c-' + p); if (el) { el.classList.remove('dm'); el.classList.add('pr'); } });
+      const unls = s.unlocks || [];
+      unls.forEach(u => { const el = document.getElementById('c-' + u); if (el) { el.classList.remove('dm'); el.classList.add('ul'); } });
     }
     function clrHl() { document.querySelectorAll('.card').forEach(c => c.classList.remove('dm', 'hl', 'pr', 'ul')); }
 
     // ── Subject modal ──
     function openMod(code) {
-      const s = byCode[code]; if (!s) return;
-      const t = T[s.type], k = KARDEX[code];
+      let isExtra = false;
+      let s = byCode[code];
+      if (!s) {
+        s = OBL_OPT.find(x => x.code === code) || ELEC_CAT.find(x => x.code === code) || COMP_CAT.find(x => x.code === code);
+        if (!s) return;
+        isExtra = true;
+      }
+      const typeStr = s.type || (OBL_OPT.includes(s) ? 'OPT' : ELEC_CAT.includes(s) ? 'ELEC' : 'COMP');
+      const t = T[typeStr];
+      const k = KARDEX[code];
       document.getElementById('mbar').style.background = t.c;
       document.getElementById('mcode').textContent = s.virt ? `Semestre ${SNMS[s.sem - 1]}` : `Código: ${code}`;
       document.getElementById('mname').textContent = s.name;
-      let meta = `<span class="mbd" style="color:${t.c};border-color:${t.c}">${t.l}</span>
-<span class="mbd" style="color:var(--mu);border-color:var(--br)">${s.uc > 0 ? s.uc + ' UC' : 'Sin UC'}</span>
-<span class="mbd" style="color:var(--ac2);border-color:var(--ac2)">Sem. ${SNMS[s.sem - 1]}</span>`;
+      let meta = `<span class="mbd" style="color:${t.c};border-color:${t.c}">${t.l}</span>`;
+      if (s.sem) meta += `<span class="mbd" style="color:var(--ac2);border-color:var(--ac2)">Sem. ${SNMS[s.sem - 1]}</span>`;
+
       if (k) {
         if (k.st === 'apb') meta += `<span class="mbd" style="color:var(--grn);border-color:var(--grn)">✓ Aprobada${k.nota != null ? ' · ' + k.nota : ' (sin calif.)'}${k.nota_manual ? ' *manual' : ''}${k.retiradas ? ` · ${k.retiradas} retiros prev.` : ''}</span>`;
         else if (k.st === 'sc') meta += `<span class="mbd" style="color:var(--ylw);border-color:var(--ylw)">★ Cursando (SC)</span>`;
@@ -1401,23 +1488,33 @@ ${chips}${stbar}${virtHint}`;
       document.getElementById('msearch-wrap').style.display = 'none';
       document.getElementById('mtabs').style.display = 'none';
       let body = '';
-      if (s.pre.length) {
-        body += `<div class="msec"><div class="mstit">🔒 Prelaciones (debes aprobar antes)</div><div class="mlist">`;
-        s.pre.forEach(p => {
-          const ps = byCode[p], pk = KARDEX[p];
-          const tick = pk?.st === 'apb' ? ' <span style="color:var(--grn)">✓</span>' : '';
-          body += `<div class="mitem" onclick="closeMod();openMod('${p}')"><div class="mdot" style="background:${ps ? T[ps.type].c : '#999'}"></div><span><strong>${p}</strong>${ps ? ' — ' + ps.name : ''}</span>${tick}</div>`;
-        });
-        body += `</div></div>`;
-      } else body += `<div class="msec"><div class="mstit" style="color:var(--grn)">✅ Sin prelaciones — puedes inscribirla desde el primer semestre</div></div>`;
-      if (s.unlocks.length) {
-        body += `<div class="msec"><div class="mstit">🔓 Desbloquea estas materias</div><div class="mlist">`;
-        s.unlocks.forEach(u => {
-          const us = byCode[u], uk = KARDEX[u];
-          const tick = uk?.st === 'apb' ? ' <span style="color:var(--grn)">✓</span>' : '';
-          body += `<div class="mitem" onclick="closeMod();openMod('${u}')"><div class="mdot" style="background:${us ? T[us.type].c : '#999'}"></div><span><strong>${u}</strong>${us ? ' — ' + us.name : ''}</span>${tick}</div>`;
-        });
-        body += `</div></div>`;
+      if (isExtra) {
+        if (s.pre && typeof s.pre === 'string') {
+          body += `<div class="msec"><div class="mstit">🔒 Requisito sugerido</div><div class="mlist" style="color:var(--tx);font-size:11px;padding:8px;background:var(--s2);border-radius:6px">${s.pre}</div></div>`;
+        } else {
+          body += `<div class="msec"><div class="mstit" style="color:var(--grn)">✅ Sin prelaciones (o según catálogo)</div></div>`;
+        }
+      } else {
+        if (s.pre.length) {
+          body += `<div class="msec"><div class="mstit">🔒 Prelaciones (debes aprobar antes)</div><div class="mlist">`;
+          s.pre.forEach(p => {
+            const ps = byCode[p], pk = KARDEX[p];
+            const clsState = pk?.st === 'apb' ? ' apb' : pk?.st === 'sc' ? ' sc' : '';
+            const tick = pk?.st === 'apb' ? ' <span style="color:var(--grn)">✓</span>' : '';
+            body += `<div class="mitem${clsState}" onclick="closeMod();openMod('${p}')"><div class="mdot" style="background:${ps ? T[ps.type].c : '#999'}"></div><span><strong>${p}</strong>${ps ? ' — ' + ps.name : ''}</span>${tick}</div>`;
+          });
+          body += `</div></div>`;
+        } else body += `<div class="msec"><div class="mstit" style="color:var(--grn)">✅ Sin prelaciones — puedes inscribirla desde el primer semestre</div></div>`;
+        if (s.unlocks.length) {
+          body += `<div class="msec"><div class="mstit">🔓 Desbloquea estas materias</div><div class="mlist">`;
+          s.unlocks.forEach(u => {
+            const us = byCode[u], uk = KARDEX[u];
+            const clsState = uk?.st === 'apb' ? ' apb' : uk?.st === 'sc' ? ' sc' : '';
+            const tick = uk?.st === 'apb' ? ' <span style="color:var(--grn)">✓</span>' : '';
+            body += `<div class="mitem${clsState}" onclick="closeMod();openMod('${u}')"><div class="mdot" style="background:${us ? T[us.type].c : '#999'}"></div><span><strong>${u}</strong>${us ? ' — ' + us.name : ''}</span>${tick}</div>`;
+          });
+          body += `</div></div>`;
+        }
       }
       document.getElementById('mbody').innerHTML = body;
       document.getElementById('stat-sel').textContent = s.name.split(' ').slice(0, 3).join(' ') + (s.name.split(' ').length > 3 ? '…' : '');
@@ -1472,14 +1569,31 @@ ${chips}${stbar}${virtHint}`;
     }
     function renderCat(q = '') {
       if (_isCOMP) {
-        document.getElementById('mbody').innerHTML = COMP_CAT.map(e =>
-          `<div class="cat-item" style="border-color:rgba(251,146,60,.25);background:rgba(251,146,60,.05)">
-<div style="flex:1;min-width:0">
+        const compItems = [...COMP_CAT].sort((a, b) => {
+          const as = KARDEX[a.code]?.st || '';
+          const bs = KARDEX[b.code]?.st || '';
+          const ar = as === 'sc' ? 0 : (as === 'apb' ? 2 : 1);
+          const br = bs === 'sc' ? 0 : (bs === 'apb' ? 2 : 1);
+          if (ar !== br) return ar - br;
+          return a.name.localeCompare(b.name);
+        });
+        document.getElementById('mbody').innerHTML = compItems.map(e => {
+          const st = KARDEX[e.code]?.st || '';
+          const clsState = st === 'apb' ? ' apb' : st === 'sc' ? ' sc' : '';
+          return `<div class="cat-item${clsState}">
+<div class="cat-info">
   <div class="cat-name">${e.name}</div>
   <div class="cat-code">Código: ${e.code}</div>
 </div>
-<div class="cat-uc" style="color:var(--org)">COMP</div>
-</div>`).join('');
+<div class="cat-action">
+  <select class="prof-st-sel" data-code="${e.code}" onchange="quickUpdateKardex(this)">
+    <option value="">No cursa</option>
+    <option value="sc"${st === 'sc' ? ' selected' : ''}>Cursando</option>
+    <option value="apb"${st === 'apb' ? ' selected' : ''}>Aprobada</option>
+  </select>
+</div>
+</div>`;
+        }).join('');
         return;
       }
       const rd1 = rama1 ? RAMAS.find(r => r.name === rama1) : null;
@@ -1491,9 +1605,17 @@ ${chips}${stbar}${virtHint}`;
         items = items.filter(e => (set1 && set1.has(e.code)) || (set2 && set2.has(e.code)));
       if (q) items = items.filter(e => e.name.toLowerCase().includes(q) || e.code.includes(q));
       const sorted = [...items].sort((a, b) => {
+        const as = KARDEX[a.code]?.st || '';
+        const bs = KARDEX[b.code]?.st || '';
+        const ar = as === 'sc' ? 0 : (as === 'apb' ? 2 : 1);
+        const br = bs === 'sc' ? 0 : (bs === 'apb' ? 2 : 1);
+        if (ar !== br) return ar - br;
+
         const am = ((set1 && set1.has(a.code)) || (set2 && set2.has(a.code))) ? 0 : 1;
         const bm = ((set1 && set1.has(b.code)) || (set2 && set2.has(b.code))) ? 0 : 1;
-        return am - bm || a.name.localeCompare(b.name);
+        if (am !== bm) return am - bm;
+
+        return a.name.localeCompare(b.name);
       });
       const isOO = _isOO;
       document.getElementById('mbody').innerHTML = sorted.length ? sorted.map(e => {
@@ -1503,20 +1625,55 @@ ${chips}${stbar}${virtHint}`;
         else if (in1) tag = `<span class="r-badge r1">★ Rama 1</span>`;
         else if (in2) tag = `<span class="r-badge r2">★ Rama 2</span>`;
         const isMine = in1 || in2;
-        const cls = isMine ? (isOO ? ' mine-oo' : ' mine') : '';
+        let cls = isMine ? (isOO ? ' mine-oo' : ' mine') : '';
+        const st = KARDEX[e.code]?.st || '';
+        cls += st === 'apb' ? ' apb' : st === 'sc' ? ' sc' : '';
+
         return `<div class="cat-item${cls}">
-<div style="flex:1;min-width:0">
+<div class="cat-info">
   <div class="cat-name">${e.name}${tag}</div>
   <div class="cat-code">Código: ${e.code}</div>
   <div class="cat-pre">📋 Requisito: ${e.pre || e.prereq}</div>
 </div>
-<div class="cat-uc" style="color:${isOO ? 'var(--grn)' : 'var(--pnk)'}">${e.uc} UC</div>
+<div class="cat-action">
+  <select class="prof-st-sel" data-code="${e.code}" onchange="quickUpdateKardex(this)">
+    <option value="">No cursa</option>
+    <option value="sc"${st === 'sc' ? ' selected' : ''}>Cursando</option>
+    <option value="apb"${st === 'apb' ? ' selected' : ''}>Aprobada</option>
+  </select>
+</div>
 </div>`;
       }).join('') : `<div style="color:var(--mu);font-size:12px;text-align:center;padding:20px">Sin resultados</div>`;
     }
 
+    function quickUpdateKardex(sel) {
+      const code = sel.dataset.code;
+      const st = sel.value;
+      if (!st) delete KARDEX[code];
+      else {
+        if (!KARDEX[code]) KARDEX[code] = {};
+        KARDEX[code].st = st;
+      }
+      USER_PROFILE.kardex = KARDEX;
+      if (window.api) window.api.saveProfile(USER_PROFILE);
+      else localStorage.setItem('pensum_ucv_profile', JSON.stringify(USER_PROFILE));
+
+      const item = sel.closest('.cat-item');
+      if (item) {
+        item.classList.remove('apb', 'sc');
+        if (st === 'apb') item.classList.add('apb');
+        else if (st === 'sc') item.classList.add('sc');
+      }
+      window._kardexChanged = true;
+    }
+
     // ── Close modal ──
-    function closeMod() { document.getElementById('ov').classList.remove('on'); document.getElementById('stat-sel').textContent = '—'; _activeTab = 'all'; }
+    function closeMod() {
+      document.getElementById('ov').classList.remove('on');
+      document.getElementById('stat-sel').textContent = '—';
+      _activeTab = 'all';
+      if (window._kardexChanged) location.reload();
+    }
     // ── Dual-Rama toggle ──
     function toggleRama(name) {
       if (rama1 === name) { rama1 = rama2; rama2 = null; }
@@ -1572,8 +1729,15 @@ ${chips}${stbar}${virtHint}`;
   <div class="mstit">👤 Nombre</div>
   <input class="msearch" id="prof-nombre" value="${(USER_PROFILE.nombre || '').replace(/"/g, '&quot;')}" placeholder="Ej. Ana García" style="margin-bottom:0">
 </div>`;
-      for (let sem = 1; sem <= 5; sem++) {
-        const ss = SUBS.filter(s => s.sem === sem && !s.virt);
+      html += `<div class="prof-sem-hdr">🌟 Auto-completar por Ramas (Selecciona materias de la rama)</div>`;
+      html += `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">`;
+      RAMAS.forEach(r => {
+        html += `<button class="rb" style="padding:4px 8px;font-size:10px;font-family:'Inter',sans-serif" onclick="autoSelectRama('${r.name}')">${r.name}</button>`;
+      });
+      html += `</div>`;
+
+      for (let sem = 1; sem <= 10; sem++) {
+        const ss = SUBS.filter(s => s.sem === sem && (!s.virt || !s.slot));
         if (!ss.length) continue;
         html += `<div class="prof-sem-hdr">📚 Semestre ${SNMS[sem - 1]}</div><div class="prof-grid">`;
         ss.forEach(s => {
@@ -1594,6 +1758,32 @@ ${chips}${stbar}${virtHint}`;
         });
         html += `</div>`;
       }
+
+      const cats = [
+        { title: 'Obligatorias Optativas', data: OBL_OPT },
+        { title: 'Electivas', data: ELEC_CAT },
+        { title: 'Complementarias', data: COMP_CAT }
+      ];
+      cats.forEach(cat => {
+        html += `<div class="prof-sem-hdr">📚 ${cat.title}</div><div class="prof-grid">`;
+        cat.data.forEach(s => {
+          const k = KARDEX[s.code] || {};
+          const st = k.st || '', nota = k.nota != null ? k.nota : '';
+          const cls = st === 'apb' ? ' apb' : st === 'sc' ? ' sc' : '';
+          html += `<div class="prof-item${cls}">
+  <span class="prof-code">${s.code}</span>
+  <span class="prof-name">${s.name}</span>
+  <select class="prof-st-sel" data-code="${s.code}" onchange="_profStChange(this)">
+    <option value="">Pendiente</option>
+    <option value="sc"${st === 'sc' ? ' selected' : ''}>Cursando</option>
+    <option value="apb"${st === 'apb' ? ' selected' : ''}>Aprobada</option>
+  </select>
+  <input class="prof-nota" data-code="${s.code}" type="number" min="1" max="20" step="1"
+    placeholder="nota" value="${nota}" style="display:${st === 'apb' ? 'inline-block' : 'none'}">
+</div>`;
+        });
+        html += `</div>`;
+      });
       html += `<div style="display:flex;gap:8px;margin-top:16px">
   <button class="psave-btn" onclick="saveProfile()">💾 Guardar perfil</button>
   <button class="psave-btn" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.35);color:var(--red);max-width:130px" onclick="clearProfile()">🗑 Limpiar</button>
@@ -1636,6 +1826,20 @@ ${chips}${stbar}${virtHint}`;
       location.reload();
     }
     function closeProfMod() { document.getElementById('prof-ov').classList.remove('on'); }
+
+    function autoSelectRama(rname) {
+      event.preventDefault(); // en caso de ser un botón, evitamos scroll o comportamientos por defecto
+      const r = RAMAS.find(x => x.name === rname);
+      if (!r) return;
+      const codesToSelect = [...r.oo, ...r.elec];
+      codesToSelect.forEach(code => {
+        const sel = document.querySelector(`#prof-body .prof-st-sel[data-code="${code}"]`);
+        if (sel && sel.value === '') {
+          sel.value = 'apb';
+          _profStChange(sel);
+        }
+      });
+    }
 
     document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeMod(); closeProfMod(); } });
   </script>
